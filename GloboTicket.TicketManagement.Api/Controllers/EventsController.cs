@@ -1,4 +1,5 @@
-﻿using GloboTicket.TicketManagement.Application.Features.Events.Commands.CreateEvent;
+﻿using GloboTicket.TicketManagement.Api.Utility;
+using GloboTicket.TicketManagement.Application.Features.Events.Commands.CreateEvent;
 using GloboTicket.TicketManagement.Application.Features.Events.Commands.DeleteEvent;
 using GloboTicket.TicketManagement.Application.Features.Events.Commands.UpdateEvent;
 using GloboTicket.TicketManagement.Application.Features.Events.Queries.GetEventDetail;
@@ -24,14 +25,13 @@ namespace GloboTicket.TicketManagement.Api.Controllers
             _mediator = mediator;
         }
 
-
         [HttpGet(Name = "GetAllEvents")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<List<EventListVm>>> GetAllEvents()
         {
-            var result = await _mediator.Send(new GetEventsListQuery());
-            return Ok(result);
+            var dtos = await _mediator.Send(new GetEventsListQuery());
+            return Ok(dtos);
         }
 
         [HttpGet("{id}", Name = "GetEventById")]
@@ -41,9 +41,7 @@ namespace GloboTicket.TicketManagement.Api.Controllers
             return Ok(await _mediator.Send(getEventDetailQuery));
         }
 
-
-
-        [HttpGet(Name = "Add Event")]
+        [HttpPost(Name = "AddEvent")]
         public async Task<ActionResult<Guid>> Create([FromBody] CreateEventCommand createEventCommand)
         {
             var id = await _mediator.Send(createEventCommand);
@@ -60,7 +58,7 @@ namespace GloboTicket.TicketManagement.Api.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id}", Name = "DeleteEvent")]
+        [HttpDelete("{id}", Name = "DeleteEvent")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
@@ -72,11 +70,12 @@ namespace GloboTicket.TicketManagement.Api.Controllers
         }
 
         [HttpGet("export", Name = "ExportEvents")]
+        [FileResultContentType("text/csv")]
         public async Task<FileResult> ExportEvents()
         {
             var fileDto = await _mediator.Send(new GetEventsExportQuery());
+
             return File(fileDto.Data, fileDto.ContentType, fileDto.EventExportFileName);
         }
-
     }
 }
