@@ -26,7 +26,7 @@ namespace GloboTicket.TicketManagement.API.IntegrationTests.Controllers
             var responseString = await response.Content.ReadAsStringAsync();
 
             var result = JsonSerializer.Deserialize<List<CategoryListVm>>(responseString);
-            
+
             Assert.IsType<List<CategoryListVm>>(result);
             Assert.NotEmpty(result);
         }
