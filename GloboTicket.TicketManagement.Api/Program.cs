@@ -1,5 +1,9 @@
 using GloboTicket.TicketManagement.Api;
 
+using Serilog;
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 
